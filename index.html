@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>National Postal Museum — Project Progress Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0C0C0C;--ink2:#2A2A2A;--ink3:#555;--ink4:#888;--ink5:#BBB;
+  --cream:#F7F4EE;--cream2:#EDE9E0;--cream3:#E2DDD3;
+  --surface:#FFFFFF;--surface2:#FAFAF8;
+  --b:#E2DDD3;--b2:#D0CAC0;
+  --red:#C73B1E;--red2:#A32E14;--rg:rgba(199,59,30,0.1);--rl:rgba(199,59,30,0.06);
+  --green:#1A7A4A;--gd:rgba(26,122,74,0.1);--gl:rgba(26,122,74,0.06);
+  --amber:#C27A0E;--ad:rgba(194,122,14,0.1);
+  --blue:#1A5FA8;--bd:rgba(26,95,168,0.1);
+  --purple:#6B35B8;--pd:rgba(107,53,184,0.1);
+  --teal:#0E7A6B;--td:rgba(14,122,107,0.1);
+  --gray:#5A5A5A;
+  --r:12px;--r2:8px;--r3:6px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04);
+  --shadow2:0 2px 8px rgba(0,0,0,0.1),0 8px 32px rgba(0,0,0,0.06);
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+/* ── SETUP / LOGIN OVERLAYS ── */
+.overlay{position:fixed;inset:0;background:rgba(12,12,12,0.7);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.ov-card{width:100%;max-width:480px;background:var(--surface);border-radius:20px;overflow:hidden;box-shadow:var(--shadow2)}
+.ov-head{background:var(--ink);padding:28px 32px;position:relative;overflow:hidden}
+.ov-head::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:var(--red);opacity:0.2}
+.ov-head h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;letter-spacing:-0.3px}
+.ov-head p{font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;font-family:'DM Mono',monospace}
+.ov-body{padding:28px 32px}
+.of{margin-bottom:14px}
+.of label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink4);margin-bottom:5px}
+.of input,.of select,.of textarea{width:100%;padding:10px 13px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r2);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color 0.2s,background 0.2s}
+.of input:focus,.of select:focus,.of textarea:focus{border-color:var(--red);background:#fff}
+.of input::placeholder,.of textarea::placeholder{color:var(--ink5)}
+.btn-primary{width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:var(--r2);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.2px}
+.btn-primary:hover{background:var(--ink2)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-ghost{width:100%;padding:10px;background:transparent;color:var(--ink3);border:1px solid var(--b2);border-radius:var(--r2);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;cursor:pointer;transition:all 0.15s;margin-top:8px}
+.btn-ghost:hover{border-color:var(--ink3);color:var(--ink)}
+.msg-err{padding:9px 12px;border-radius:var(--r3);font-size:12px;margin-top:10px;background:var(--rg);color:var(--red);border:1px solid rgba(199,59,30,0.2);display:none}
+.msg-ok{padding:9px 12px;border-radius:var(--r3);font-size:12px;margin-top:10px;background:var(--gd);color:var(--green);border:1px solid rgba(26,122,74,0.2);display:none}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--ink5);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b)}
+.tabs{display:flex;gap:4px;margin-bottom:18px;background:var(--cream);padding:4px;border-radius:var(--r2)}
+.tab{flex:1;padding:7px;text-align:center;border-radius:var(--r3);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;color:var(--ink4)}
+.tab.on{background:#fff;color:var(--ink);box-shadow:var(--shadow);font-weight:600}
+.setup-code{background:var(--cream);border:1px solid var(--b2);border-radius:var(--r2);padding:12px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--ink3);line-height:1.8;margin-bottom:12px;overflow-x:auto;white-space:pre;max-height:180px;overflow-y:auto}
+
+/* ── TOP HEADER ── */
+.header{background:var(--ink);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.06)}
+.h-logo{display:flex;align-items:center;gap:12px}
+.h-stamp{width:32px;height:32px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.h-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:#fff;letter-spacing:-0.2px}
+.h-sub{font-size:11px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;margin-top:1px}
+.h-right{display:flex;align-items:center;gap:12px}
+.sync-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,0.5)}
+.sdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3)}
+.sdot.live{background:#3CCF7E;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(60,207,126,0.4)}50%{opacity:0.7;box-shadow:0 0 0 4px rgba(60,207,126,0)}}
+.h-user{display:flex;align-items:center;gap:8px;cursor:pointer}
+.h-av{width:30px;height:30px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.h-email{font-size:12px;color:rgba(255,255,255,0.5);font-family:'DM Mono',monospace;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-so{padding:5px 12px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:rgba(255,255,255,0.5);font-size:11px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:all 0.15s}
+.btn-so:hover{border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.8)}
+
+/* ── NAV TABS ── */
+.nav-bar{background:var(--surface);border-bottom:1px solid var(--b);padding:0 32px;display:flex;align-items:center;gap:0;position:sticky;top:60px;z-index:40}
+.nav-tab{padding:14px 20px;font-size:13px;font-weight:500;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nav-tab:hover{color:var(--ink)}
+.nav-tab.on{color:var(--red);border-bottom-color:var(--red);font-weight:600}
+.nav-tab .badge{padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;padding:8px 0}
+
+/* ── LAYOUT ── */
+.page{padding:28px 32px;max-width:1400px;margin:0 auto}
+.page-grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.full-width{grid-column:1/-1}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);padding:16px 18px;transition:all 0.2s;cursor:default;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;opacity:0;transition:opacity 0.3s}
+.stat:hover::after{opacity:1}
+.stat:hover{box-shadow:var(--shadow)}
+.stat.s1::after{background:var(--red)}.stat.s2::after{background:var(--green)}.stat.s3::after{background:var(--amber)}.stat.s4::after{background:var(--blue)}.stat.s5::after{background:var(--purple)}.stat.s6::after{background:var(--teal)}
+.stat-ico{font-size:18px;margin-bottom:8px;display:block}
+.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink4);margin-bottom:4px}
+.stat-val{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--ink);line-height:1}
+.stat-note{font-size:11px;color:var(--ink4);margin-top:3px;font-family:'DM Mono',monospace}
+
+/* ── SECTION HEADER ── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-0.2px}
+.sec-sub{font-size:12px;color:var(--ink4);font-family:'DM Mono',monospace;margin-top:2px}
+.btn-sm{padding:7px 14px;background:var(--ink);color:#fff;border:none;border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.btn-sm:hover{background:var(--ink2)}
+.btn-sm-ghost{padding:7px 14px;background:transparent;color:var(--ink3);border:1px solid var(--b2);border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:12px;cursor:pointer;transition:all 0.15s}
+.btn-sm-ghost:hover{border-color:var(--ink3);color:var(--ink)}
+.btn-red{background:var(--red);color:#fff;border:none}
+.btn-red:hover{background:var(--red2)}
+
+/* ── WORK STREAM CARDS ── */
+.streams-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.stream-card{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);padding:18px;transition:all 0.2s;cursor:pointer}
+.stream-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.stream-card.expanded{border-color:var(--red);box-shadow:0 0 0 2px var(--rg)}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sc-ico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sc-pct{font-family:'Fraunces',serif;font-size:22px;font-weight:600}
+.sc-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.sc-status{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.sc-bar-bg{height:5px;background:var(--cream3);border-radius:3px;overflow:hidden;margin:10px 0 6px}
+.sc-bar-fill{height:100%;border-radius:3px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.sc-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* ── TASK LIST ── */
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{background:var(--surface);border:1px solid var(--b);border-radius:var(--r2);padding:14px 16px;transition:all 0.15s;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.task-item:hover{border-color:var(--b2);box-shadow:var(--shadow)}
+.task-row1{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.task-ws{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;white-space:nowrap}
+.task-name{font-size:13px;font-weight:500;color:var(--ink);flex:1}
+.task-row2{display:flex;align-items:center;gap:10px}
+.pct-wrap{display:flex;align-items:center;gap:8px;flex:1}
+.pct-bar{flex:1;height:4px;background:var(--cream3);border-radius:2px;overflow:hidden}
+.pct-fill{height:100%;border-radius:2px;transition:width 0.5s ease}
+.pct-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink4);min-width:30px;text-align:right}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.task-date{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace;white-space:nowrap}
+.task-actions{display:flex;gap:6px;margin-top:8px}
+.task-btn{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--ink3);font-family:'Bricolage Grotesque',sans-serif;transition:all 0.12s}
+.task-btn:hover{background:var(--cream);color:var(--ink)}
+.task-btn.del:hover{background:var(--rg);border-color:var(--red);color:var(--red)}
+
+/* STATUS BADGES */
+.s-ns{background:#F5F5F5;color:#888}.s-ip{background:var(--bd);color:var(--blue)}.s-done{background:var(--gd);color:var(--green)}.s-blocked{background:var(--rg);color:var(--red)}
+
+/* ── ADD TASK FORM ── */
+.add-form{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end}
+.fg label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink4);margin-bottom:5px}
+.fg input,.fg select{width:100%;padding:9px 12px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color 0.2s;appearance:none}
+.fg input:focus,.fg select:focus{border-color:var(--red);background:#fff}
+.fg input::placeholder{color:var(--ink5)}
+.fg select option{background:#fff}
+.btn-add-task{padding:9px 16px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.btn-add-task:hover{background:var(--red2)}
+
+/* ── WEEKLY MILESTONES ── */
+.week-card{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);margin-bottom:14px;overflow:hidden;transition:all 0.2s}
+.week-head{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;border-bottom:1px solid transparent;transition:all 0.15s}
+.week-head:hover{background:var(--cream)}
+.week-head.open{border-bottom-color:var(--b)}
+.week-num{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;background:var(--cream2);color:var(--ink3)}
+.week-title{font-size:14px;font-weight:600;color:var(--ink);flex:1}
+.week-dates{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.week-pct{font-family:'Fraunces',serif;font-size:18px;font-weight:600;min-width:50px;text-align:right}
+.week-body{padding:16px 20px;display:none}
+.week-body.open{display:block}
+.milestone-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r3);margin-bottom:6px;border:1px solid var(--b);background:var(--cream);transition:all 0.15s}
+.milestone-item:hover{background:var(--cream2)}
+.milestone-item:last-child{margin-bottom:0}
+.ms-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.15s}
+.ms-check.done{background:var(--green);border-color:var(--green);color:#fff;font-size:10px}
+.ms-check.blocked{background:var(--red);border-color:var(--red);color:#fff;font-size:10px}
+.ms-text{flex:1;font-size:13px;color:var(--ink)}
+.ms-text.done-text{text-decoration:line-through;color:var(--ink4)}
+.ms-ws{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:2px 6px;border-radius:3px;font-family:'DM Mono',monospace;white-space:nowrap}
+.ms-del{background:none;border:none;cursor:pointer;color:var(--ink5);font-size:12px;padding:2px 5px;border-radius:3px;transition:all 0.12s}
+.ms-del:hover{background:var(--rg);color:var(--red)}
+
+/* ── GANTT ── */
+.gantt-wrap{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
+.gantt-head{display:grid;border-bottom:1px solid var(--b);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink4);font-family:'DM Mono',monospace}
+.gantt-row{display:grid;border-bottom:1px solid var(--b);align-items:center;transition:background 0.12s}
+.gantt-row:last-child{border-bottom:none}
+.gantt-row:hover{background:var(--cream)}
+.gantt-label{padding:12px 16px;font-size:12px;font-weight:500;color:var(--ink);border-right:1px solid var(--b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-ws-label{padding:12px 16px;font-size:10px;font-family:'DM Mono',monospace;border-right:1px solid var(--b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-track{padding:8px 6px;display:flex;align-items:center}
+.gantt-bar-container{width:100%;height:20px;background:var(--cream3);border-radius:4px;overflow:hidden;position:relative}
+.gantt-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 6px;position:absolute;transition:width 0.5s ease}
+.gantt-bar-label{font-size:10px;font-weight:600;color:#fff;white-space:nowrap;font-family:'DM Mono',monospace;overflow:hidden}
+.week-header-cell{padding:8px 4px;text-align:center;border-right:1px solid var(--b);font-size:9px}
+
+/* ── COMMENTS ── */
+.comment-item{display:flex;gap:10px;padding:14px 0;border-bottom:1px solid var(--b);animation:slideIn 0.3s ease}
+.comment-item:last-child{border-bottom:none}
+.c-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.c-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.c-name{font-size:12px;font-weight:600;color:var(--ink)}
+.c-role{font-size:10px;padding:1px 6px;border-radius:3px;font-family:'DM Mono',monospace;font-weight:600}
+.c-time{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.c-text{font-size:13px;color:var(--ink2);line-height:1.55}
+.c-tag{font-size:10px;padding:1px 6px;background:var(--cream2);border-radius:3px;color:var(--ink4);font-family:'DM Mono',monospace;margin-left:4px}
+.comment-input-area{background:var(--cream);border:1px solid var(--b2);border-radius:var(--r2);padding:12px;margin-top:14px}
+.comment-input{width:100%;background:transparent;border:none;outline:none;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:var(--ink);resize:none;min-height:60px}
+.comment-input::placeholder{color:var(--ink5)}
+.comment-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--b)}
+
+/* ── RIGHT PANEL ── */
+.right-panel{display:flex;flex-direction:column;gap:16px}
+.rp-card{background:var(--surface);border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
+.rp-head{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.rp-title{font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:7px}
+.rp-body{padding:14px 16px}
+
+/* AI INSIGHTS */
+.ai-ins{display:flex;gap:8px;padding:10px 11px;border-radius:var(--r3);margin-bottom:8px;font-size:12px;line-height:1.6;border:1px solid transparent;animation:slideIn 0.3s ease}
+.ai-ins:last-child{margin-bottom:0}
+.aii{font-size:13px;flex-shrink:0}
+.i-danger{background:var(--rg);border-color:rgba(199,59,30,0.2);color:var(--red2)}
+.i-warn{background:var(--ad);border-color:rgba(194,122,14,0.2);color:var(--amber)}
+.i-ok{background:var(--gd);border-color:rgba(26,122,74,0.2);color:var(--green)}
+.i-info{background:var(--bd);border-color:rgba(26,95,168,0.2);color:var(--blue)}
+
+/* CHAT */
+.chat-msgs{max-height:200px;overflow-y:auto;padding:10px 0;display:flex;flex-direction:column;gap:7px}
+.bbl{padding:9px 12px;border-radius:9px;font-size:12px;line-height:1.55;max-width:90%;animation:slideIn 0.2s ease}
+.bu{background:var(--ink);color:#fff;align-self:flex-end;border-radius:9px 9px 3px 9px}
+.ba{background:var(--cream);color:var(--ink2);border:1px solid var(--b);align-self:flex-start;border-radius:9px 9px 9px 3px}
+.ba.ld{color:var(--ink4);font-style:italic}
+.chat-inp-row{display:flex;gap:7px;padding-top:10px;border-top:1px solid var(--b)}
+.chat-inp{flex:1;padding:8px 11px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:12px;color:var(--ink);outline:none;resize:none;transition:border-color 0.2s}
+.chat-inp:focus{border-color:var(--red);background:#fff}
+.chat-inp::placeholder{color:var(--ink5)}
+.snd-btn{width:32px;height:32px;background:var(--red);border:none;border-radius:var(--r3);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;transition:background 0.15s}
+.snd-btn:hover{background:var(--red2)}.snd-btn:disabled{opacity:0.4;cursor:not-allowed}
+.q-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.qchip{padding:4px 9px;background:var(--cream);border:1px solid var(--b2);border-radius:20px;font-size:11px;color:var(--ink4);cursor:pointer;transition:all 0.15s}
+.qchip:hover{border-color:var(--red);color:var(--red);background:var(--rg)}
+
+/* TIMELINE MINI */
+.timeline-mini{display:flex;flex-direction:column;gap:8px}
+.tm-item{display:flex;gap:10px;align-items:flex-start}
+.tm-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tm-content{flex:1}
+.tm-label{font-size:12px;font-weight:500;color:var(--ink)}
+.tm-date{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+
+/* PROGRESS RING */
+.ring-wrap{display:flex;align-items:center;justify-content:center;padding:8px 0}
+.ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--cream3);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 0.6s ease}
+.ring-text{fill:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:20px;dominant-baseline:middle;text-anchor:middle}
+.ring-sub{fill:var(--ink4);font-family:'DM Mono',monospace;font-size:9px;dominant-baseline:middle;text-anchor:middle}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,12,12,0.5);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);padding:24px;width:100%;max-width:500px;box-shadow:var(--shadow2);animation:slideIn 0.2s ease}
+.modal h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:16px;color:var(--ink)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{padding:8px 16px;background:transparent;border:1px solid var(--b2);border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;cursor:pointer;color:var(--ink3)}
+.btn-save{padding:8px 16px;background:var(--ink);color:#fff;border:none;border-radius:var(--r3);font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-save:hover{background:var(--ink2)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;color:var(--ink4)}
+.empty-ico{font-size:32px;margin-bottom:10px}
+.empty-txt{font-size:14px;font-weight:500;color:var(--ink3);margin-bottom:4px}
+.empty-sub{font-size:12px;font-family:'DM Mono',monospace}
+
+/* SHARE BANNER */
+.share-banner{background:var(--ink);color:#fff;padding:10px 32px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-family:'DM Mono',monospace}
+.share-link{background:rgba(255,255,255,0.1);padding:4px 12px;border-radius:4px;color:rgba(255,255,255,0.7);cursor:pointer;transition:all 0.15s}
+.share-link:hover{background:rgba(255,255,255,0.15);color:#fff}
+
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:2px}
+@media(max-width:1100px){.page-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(3,1fr)}.streams-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr)}.streams-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}.page{padding:16px}.nav-bar{overflow-x:auto}}
+</style>
+</head>
+<body>
+
+<!-- SETUP OVERLAY -->
+<div class="overlay" id="ov-setup">
+  <div class="ov-card" style="max-width:520px;max-height:95vh;overflow-y:auto">
+    <div class="ov-head">
+      <h2>📮 Project Progress Tracker</h2>
+      <p>Connect Supabase for live team & client access</p>
+    </div>
+    <div class="ov-body">
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</span><span style="font-size:13px;font-weight:600">Run this SQL in Supabase SQL Editor</span></div>
+        <div class="setup-code">create table site_tasks (
+  id text primary key,
+  name text not null,
+  workstream text not null,
+  status text default 'not_started',
+  pct integer default 0,
+  week_num integer default 1,
+  due_date text,
+  notes text,
+  created_at timestamptz default now()
+);
+create table weekly_milestones (
+  id text primary key,
+  week_num integer not null,
+  week_label text,
+  start_date text,
+  end_date text,
+  description text not null,
+  workstream text,
+  done boolean default false,
+  blocked boolean default false,
+  created_at timestamptz default now()
+);
+create table site_comments (
+  id text primary key,
+  task_id text,
+  author_name text,
+  author_email text,
+  author_role text default 'team',
+  content text not null,
+  workstream text,
+  created_at timestamptz default now()
+);
+alter table site_tasks enable row level security;
+alter table weekly_milestones enable row level security;
+alter table site_comments enable row level security;
+create policy "Allow all" on site_tasks for all using (true);
+create policy "Allow all" on weekly_milestones for all using (true);
+create policy "Allow all" on site_comments for all using (true);</div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</span><span style="font-size:13px;font-weight:600">Enter your Supabase credentials</span></div>
+        <div class="of"><label>Project URL</label><input id="sb-url" placeholder="https://yourproject.supabase.co"></div>
+        <div class="of"><label>Anon Key (Legacy eyJ...)</label><input id="sb-key" placeholder="eyJhbGciOi..."></div>
+        <div id="setup-err" class="msg-err"></div>
+        <button class="btn-primary" id="btn-connect" onclick="connectSB()" style="margin-top:12px">Connect & Launch →</button>
+        <div class="divider">or</div>
+        <button class="btn-ghost" onclick="demoMode()">Continue in Demo Mode</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="overlay" id="ov-login" style="display:none">
+  <div class="ov-card">
+    <div class="ov-head"><h2>Sign In</h2><p>National Postal Museum · Project Tracker</p></div>
+    <div class="ov-body">
+      <div class="tabs"><div class="tab on" id="t-si" onclick="setTab('si')">Sign In</div><div class="tab" id="t-su" onclick="setTab('su')">Sign Up</div></div>
+      <div class="of"><label>Email</label><input type="email" id="a-email" placeholder="you@company.com"></div>
+      <div class="of"><label>Password</label><input type="password" id="a-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()"></div>
+      <div id="auth-msg" class="msg-err"></div>
+      <button class="btn-primary" id="auth-btn" onclick="doAuth()" style="margin-top:4px">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn-ghost" onclick="demoMode()">Continue in Demo Mode</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TASK MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>Edit Task</h3>
+    <div class="of"><label>Task Name</label><input id="edit-name" placeholder="Task name"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="of"><label>Status</label>
+        <select id="edit-status">
+          <option value="not_started">Not Started</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="of"><label>Progress %</label><input type="number" id="edit-pct" min="0" max="100" placeholder="0"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="of"><label>Workstream</label>
+        <select id="edit-ws">
+          <option value="Civil">Civil & Structure</option>
+          <option value="HVAC">HVAC</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Fabrication">Fabrication</option>
+          <option value="Content">Content & Media</option>
+          <option value="Software">Software & Tech</option>
+        </select>
+      </div>
+      <div class="of"><label>Due Date</label><input type="date" id="edit-due"></div>
+    </div>
+    <div class="of"><label>Notes</label><textarea id="edit-notes" rows="2" placeholder="Any notes or blockers..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<header class="header">
+  <div class="h-logo">
+    <div class="h-stamp">📮</div>
+    <div>
+      <div class="h-title">National Postal Museum</div>
+      <div class="h-sub" id="h-sub">Project Progress Intelligence</div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="sync-pill"><div class="sdot" id="sdot"></div><span id="stxt">Local</span></div>
+    <div class="h-user" id="h-user" style="display:none">
+      <div class="h-av" id="h-av">?</div>
+      <div class="h-email" id="h-email"></div>
+    </div>
+    <button class="btn-so" id="btn-so" style="display:none" onclick="signOut()">Sign out</button>
+  </div>
+</header>
+
+<nav class="nav-bar">
+  <div class="nav-tab on" data-tab="dashboard" onclick="showTab('dashboard')">📊 Dashboard</div>
+  <div class="nav-tab" data-tab="daily" onclick="showTab('daily')">📋 Daily Updates <span class="badge" id="badge-daily" style="background:var(--rg);color:var(--red)"></span></div>
+  <div class="nav-tab" data-tab="weekly" onclick="showTab('weekly')">🎯 Weekly Milestones</div>
+  <div class="nav-tab" data-tab="gantt" onclick="showTab('gantt')">📅 Gantt View</div>
+  <div class="nav-tab" data-tab="comments" onclick="showTab('comments')">💬 Comments <span class="badge" id="badge-comments" style="background:var(--bd);color:var(--blue)"></span></div>
+  <div class="nav-right">
+    <button class="btn-sm-ghost" onclick="openWsModal()">⚙️ Workstreams</button>
+    <button class="btn-sm btn-red" onclick="showTab('daily');document.getElementById('add-form-section').scrollIntoView({behavior:'smooth'})">+ Add Update</button>
+    <button class="btn-sm-ghost" onclick="shareReport()">📤 Share</button>
+  </div>
+</nav>
+
+<!-- WORKSTREAM MANAGER MODAL --><div class="modal-overlay" id="ws-modal">
+  <div class="modal" style="max-width:560px">
+    <h3>⚙️ Manage Workstreams</h3>
+    <div id="ws-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:280px;overflow-y:auto"></div>
+    <div style="border-top:1px solid var(--b);padding-top:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.8px">Add New Workstream</div>
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:end">
+        <div class="of" style="margin:0"><label>Name</label><input id="ws-new-name" placeholder="e.g. Plumbing" onkeydown="if(event.key==='Enter')addWsFromModal()"></div>
+        <div class="of" style="margin:0"><label>Icon</label>
+          <select id="ws-new-icon" style="padding:9px 8px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r3);font-size:16px;outline:none;cursor:pointer;width:70px">
+            <option>📋</option><option>🏗️</option><option>❄️</option><option>⚡</option><option>🔩</option>
+            <option>🎬</option><option>💻</option><option>🎨</option><option>📦</option><option>🔧</option>
+            <option>📐</option><option>🚿</option><option>🔌</option><option>🪟</option><option>🏠</option>
+            <option>🌿</option><option>🔐</option><option>📡</option><option>🎭</option><option>🖼️</option>
+          </select>
+        </div>
+        <button class="btn-save" onclick="addWsFromModal()" style="align-self:end;padding:9px 16px">+ Add</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeWsModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE BANNER -->
+<div class="share-banner" id="share-banner" style="display:none">
+  <span>🔗 Share this link with your client for live read-only access:</span>
+  <span class="share-link" id="share-link-txt" onclick="copyShareLink()">Click to copy link</span>
+  <button onclick="document.getElementById('share-banner').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:16px">×</button>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div id="tab-dashboard" class="page">
+  <div class="stats-row">
+    <div class="stat s1"><span class="stat-ico">📋</span><div class="stat-lbl">Total Tasks</div><div class="stat-val" id="st-total">0</div><div class="stat-note">across all streams</div></div>
+    <div class="stat s2"><span class="stat-ico">✅</span><div class="stat-lbl">Completed</div><div class="stat-val" id="st-done">0</div><div class="stat-note" id="st-done-pct">0% done</div></div>
+    <div class="stat s3"><span class="stat-ico">🔄</span><div class="stat-lbl">In Progress</div><div class="stat-val" id="st-ip">0</div><div class="stat-note">active tasks</div></div>
+    <div class="stat s4"><span class="stat-ico">🚫</span><div class="stat-lbl">Blocked</div><div class="stat-val" id="st-blocked">0</div><div class="stat-note" id="st-blocked-note">needs attention</div></div>
+    <div class="stat s5"><span class="stat-ico">🎯</span><div class="stat-lbl">Milestones</div><div class="stat-val" id="st-ms">0</div><div class="stat-note" id="st-ms-note">this week</div></div>
+    <div class="stat s6"><span class="stat-ico">💬</span><div class="stat-lbl">Comments</div><div class="stat-val" id="st-comments">0</div><div class="stat-note">total updates</div></div>
+  </div>
+
+  <div class="page-grid">
+    <div>
+      <div class="sec-head">
+        <div><div class="sec-title">Work Stream Progress</div><div class="sec-sub">Overall completion by discipline</div></div>
+      </div>
+      <div class="streams-grid" id="streams-grid"></div>
+
+      <div class="sec-head" style="margin-top:8px">
+        <div><div class="sec-title">Recent Updates</div><div class="sec-sub">Last 5 task changes</div></div>
+        <button class="btn-sm-ghost" onclick="showTab('daily')">View all</button>
+      </div>
+      <div class="task-list" id="recent-tasks"></div>
+    </div>
+
+    <div class="right-panel">
+      <div class="rp-card">
+        <div class="rp-head"><div class="rp-title">⚡ Overall Progress</div></div>
+        <div class="rp-body">
+          <div class="ring-wrap">
+            <svg width="130" height="130" viewBox="0 0 130 130" class="ring">
+              <circle class="ring-bg" cx="65" cy="65" r="54"/>
+              <circle class="ring-fill" id="ring-fill" cx="65" cy="65" r="54" stroke="var(--red)" stroke-dasharray="339.3" stroke-dashoffset="339.3"/>
+              <text class="ring-text" x="65" y="62" transform="rotate(90,65,65)" id="ring-pct">0%</text>
+              <text class="ring-sub" x="65" y="76" transform="rotate(90,65,65)">complete</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="rp-card">
+        <div class="rp-head"><div class="rp-title">🤖 Tagglabs Insights</div><div style="font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace">Tagglabs Tagglabs AI · Live</div></div>
+        <div class="rp-body">
+          <div id="ai-insights"><div class="ai-ins i-info"><span class="aii">💡</span><span>Add tasks to see AI insights.</span></div></div>
+        </div>
+      </div>
+
+      <div class="rp-card">
+        <div class="rp-head"><div class="rp-title">💬 Ask Tagglabs</div></div>
+        <div class="rp-body" style="padding-bottom:0">
+          <div class="q-chips">
+            <span class="qchip" onclick="ask('What is blocked and needs urgent attention?')">What is blocked?</span>
+            <span class="qchip" onclick="ask('Which workstream is most behind schedule?')">Behind schedule?</span>
+            <span class="qchip" onclick="ask('Give me a client-ready status update')">Client update</span>
+          </div>
+          <div class="chat-msgs" id="chat-msgs"></div>
+          <div class="chat-inp-row">
+            <textarea class="chat-inp" id="cin" rows="2" placeholder="Ask about project progress…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+            <button class="snd-btn" id="snd-btn" onclick="sendMsg()">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY UPDATES TAB -->
+<div id="tab-daily" class="page" style="display:none">
+  <div class="sec-head">
+    <div><div class="sec-title">Daily Updates</div><div class="sec-sub" id="today-date-label"></div></div>
+  </div>
+
+  <div class="add-form" id="add-form-section">
+    <div class="sec-head" style="margin-bottom:12px"><div class="sec-title" style="font-size:14px">+ Add Today's Update</div></div>
+    <div class="form-grid">
+      <div class="fg"><label>Task / Activity</label><input id="t-name" placeholder="e.g. HVAC ducting — Level 2 west wing"></div>
+      <div class="fg"><label>Work Stream</label>
+        <select id="t-ws">
+          <option value="Civil">Civil & Structure</option>
+          <option value="HVAC">HVAC</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Fabrication">Fabrication</option>
+          <option value="Content">Content & Media</option>
+          <option value="Software">Software & Tech</option>
+        </select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select id="t-status">
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+          <option value="not_started">Not Started</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="fg"><label>Progress %</label><input type="number" id="t-pct" placeholder="0" min="0" max="100"></div>
+      <div class="fg"><label>&nbsp;</label><button class="btn-add-task" onclick="addTask()">Add →</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="fg"><label>Due Date</label><input type="date" id="t-due"></div>
+      <div class="fg"><label>Notes / Blockers</label><input id="t-notes" placeholder="Any blockers or details…"></div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <span style="font-size:12px;color:var(--ink4);font-family:'DM Mono',monospace">Filter:</span>
+    <div id="filter-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <select id="f-ws-sel" onchange="filterTasks(this.value)" style="padding:6px 10px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r3);font-size:12px;color:var(--ink3);outline:none;cursor:pointer;appearance:none;font-family:'Bricolage Grotesque',sans-serif">
+        <option value="all">All Streams</option>
+      </select>
+      <select id="filter-status" onchange="filterTasks(currentFilter)" style="padding:6px 10px;background:var(--cream);border:1px solid var(--b2);border-radius:var(--r3);font-size:12px;color:var(--ink3);outline:none;cursor:pointer;appearance:none;font-family:'Bricolage Grotesque',sans-serif">
+        <option value="">All Statuses</option>
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="done">Done</option>
+        <option value="blocked">Blocked</option>
+      </select>
+    </div>
+  </div><!-- end filter bar -->
+
+  <div class="task-list" id="task-list">
+    <div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">No tasks yet</div><div class="empty-sub">Add your first daily update above</div></div>
+  </div>
+</div><!-- end tab-daily -->
+
+<!-- WEEKLY MILESTONES TAB -->
+<div id="tab-weekly" class="page" style="display:none;min-height:400px">
+
+  <!-- Header row -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div>
+      <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:#0C0C0C">Weekly Milestones</div>
+      <div style="font-size:12px;color:#888;font-family:'DM Mono',monospace;margin-top:3px">Track targets week by week</div>
+    </div>
+    <button id="btn-add-ms" onclick="toggleMsForm()" style="padding:10px 20px;background:#C73B1E;color:#fff;border:none;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:600;cursor:pointer">+ Add Milestone</button>
+  </div>
+
+  <!-- Add form (hidden by default) -->
+  <div id="ms-add-form" style="display:none;background:#fff;border:1px solid #E2DDD3;border-radius:12px;padding:24px;margin-bottom:24px">
+    <div style="font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:18px;color:#0C0C0C">🎯 New Weekly Milestone</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">Week No.</div>
+        <input type="number" id="ms-week" min="1" value="1" style="width:100%;padding:10px 12px;background:#F7F4EE;border:1px solid #D0CAC0;border-radius:6px;font-size:13px;color:#0C0C0C;font-family:'Bricolage Grotesque',sans-serif;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">Workstream</div>
+        <select id="ms-ws" style="width:100%;padding:10px 12px;background:#F7F4EE;border:1px solid #D0CAC0;border-radius:6px;font-size:13px;color:#0C0C0C;font-family:'Bricolage Grotesque',sans-serif;outline:none;appearance:none;box-sizing:border-box"></select>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">Start Date</div>
+        <input type="date" id="ms-start" style="width:100%;padding:10px 12px;background:#F7F4EE;border:1px solid #D0CAC0;border-radius:6px;font-size:13px;color:#0C0C0C;font-family:'Bricolage Grotesque',sans-serif;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">End Date</div>
+        <input type="date" id="ms-end" style="width:100%;padding:10px 12px;background:#F7F4EE;border:1px solid #D0CAC0;border-radius:6px;font-size:13px;color:#0C0C0C;font-family:'Bricolage Grotesque',sans-serif;outline:none;box-sizing:border-box">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div style="flex:1">
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:6px">Milestone / Target</div>
+        <input type="text" id="ms-desc" placeholder="e.g. Complete all HVAC ducting on Level 1" onkeydown="if(event.key==='Enter')addMilestone()" style="width:100%;padding:10px 12px;background:#F7F4EE;border:1px solid #D0CAC0;border-radius:6px;font-size:13px;color:#0C0C0C;font-family:'Bricolage Grotesque',sans-serif;outline:none;box-sizing:border-box">
+      </div>
+      <button onclick="addMilestone()" style="padding:10px 22px;background:#C73B1E;color:#fff;border:none;border-radius:6px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0">Add →</button>
+      <button onclick="toggleMsForm()" style="padding:10px 16px;background:transparent;border:1px solid #D0CAC0;border-radius:6px;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;color:#555;cursor:pointer;flex-shrink:0">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Milestones list -->
+  <div id="weekly-list">
+    <div style="text-align:center;padding:60px 20px;color:#888">
+      <div style="font-size:32px;margin-bottom:10px">🎯</div>
+      <div style="font-size:14px;font-weight:500;color:#555;margin-bottom:4px">No milestones yet</div>
+      <div style="font-size:12px;font-family:'DM Mono',monospace">Click "+ Add Milestone" to get started</div>
+    </div>
+  </div>
+</div>
+
+<!-- GANTT TAB -->
+<div id="tab-gantt" class="page" style="display:none">
+  <div class="sec-head">
+    <div><div class="sec-title">Gantt View</div><div class="sec-sub">Timeline across all work streams</div></div>
+  </div>
+  <div class="gantt-wrap" id="gantt-wrap">
+    <div class="empty" style="padding:60px"><div class="empty-ico">📅</div><div class="empty-txt">No tasks to display</div><div class="empty-sub">Add tasks with due dates to see the Gantt chart</div></div>
+  </div>
+</div>
+
+<!-- COMMENTS TAB -->
+<div id="tab-comments" class="page" style="display:none">
+  <div class="sec-head">
+    <div><div class="sec-title">Comments & Followups</div><div class="sec-sub">All team and client communications</div></div>
+  </div>
+  <div class="page-grid">
+    <div>
+      <div style="background:var(--surface);border:1px solid var(--b);border-radius:var(--r);padding:20px">
+        <div id="comments-list">
+          <div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">No comments yet</div><div class="empty-sub">Be the first to add an update</div></div>
+        </div>
+        <div class="comment-input-area">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <select id="c-ws" style="padding:6px 10px;background:var(--cream2);border:1px solid var(--b2);border-radius:var(--r3);font-size:12px;color:var(--ink3);outline:none;font-family:'Bricolage Grotesque',sans-serif;appearance:none">
+              <option value="">General</option>
+              <option value="Civil">Civil</option>
+              <option value="HVAC">HVAC</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Fabrication">Fabrication</option>
+              <option value="Content">Content</option>
+              <option value="Software">Software</option>
+            </select>
+            <input id="c-name" placeholder="Your name" style="padding:6px 10px;background:var(--cream2);border:1px solid var(--b2);border-radius:var(--r3);font-size:12px;color:var(--ink);outline:none;font-family:'Bricolage Grotesque',sans-serif;flex:1;min-width:120px">
+            <select id="c-role" style="padding:6px 10px;background:var(--cream2);border:1px solid var(--b2);border-radius:var(--r3);font-size:12px;color:var(--ink3);outline:none;font-family:'Bricolage Grotesque',sans-serif;appearance:none">
+              <option value="team">Team</option>
+              <option value="client">Client</option>
+              <option value="pm">PM</option>
+              <option value="contractor">Contractor</option>
+            </select>
+          </div>
+          <textarea class="comment-input" id="c-text" placeholder="Add a comment, update or followup…" rows="3"></textarea>
+          <div class="comment-foot">
+            <span style="font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace">Comments are visible to all collaborators</span>
+            <button class="btn-sm btn-red" onclick="addComment()">Post Comment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="rp-card">
+        <div class="rp-head"><div class="rp-title">📊 Comment Stats</div></div>
+        <div class="rp-body" id="comment-stats">
+          <div style="font-size:12px;color:var(--ink4)">No comments yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MILESTONE MODAL -->
+
+<script>
+// ─── CONSTANTS ───────────────────────────────────────────────────────────
+const WS_PALETTE=[
+  {color:'#C73B1E',bg:'rgba(199,59,30,0.1)'},{color:'#1A5FA8',bg:'rgba(26,95,168,0.1)'},
+  {color:'#C27A0E',bg:'rgba(194,122,14,0.1)'},{color:'#6B35B8',bg:'rgba(107,53,184,0.1)'},
+  {color:'#1A7A4A',bg:'rgba(26,122,74,0.1)'},{color:'#0E7A6B',bg:'rgba(14,122,107,0.1)'},
+  {color:'#B8550E',bg:'rgba(184,85,14,0.1)'},{color:'#7A1A5F',bg:'rgba(122,26,95,0.1)'},
+];
+const WS_ICONS=['🏗️','❄️','⚡','🔩','🎬','💻','🎨','📦','🔧','📐','🚿','🔌'];
+
+let WS_CONFIG={
+  Civil:{color:'#C73B1E',bg:'rgba(199,59,30,0.1)',icon:'🏗️'},
+  HVAC:{color:'#1A5FA8',bg:'rgba(26,95,168,0.1)',icon:'❄️'},
+  Electrical:{color:'#C27A0E',bg:'rgba(194,122,14,0.1)',icon:'⚡'},
+  Fabrication:{color:'#6B35B8',bg:'rgba(107,53,184,0.1)',icon:'🔩'},
+  Content:{color:'#1A7A4A',bg:'rgba(26,122,74,0.1)',icon:'🎬'},
+  Software:{color:'#0E7A6B',bg:'rgba(14,122,107,0.1)',icon:'💻'}
+};
+
+function loadWorkstreams(){
+  const saved=localStorage.getItem('spt_ws');
+  if(saved){try{WS_CONFIG=JSON.parse(saved);}catch{}}
+}
+function saveWorkstreams(){
+  localStorage.setItem('spt_ws',JSON.stringify(WS_CONFIG));
+}
+function addWorkstream(name,icon){
+  if(!name||WS_CONFIG[name])return false;
+  const idx=Object.keys(WS_CONFIG).length%WS_PALETTE.length;
+  WS_CONFIG[name]={...WS_PALETTE[idx],icon:icon||'📋'};
+  saveWorkstreams();syncAllWsDropdowns();renderDashboard();
+  return true;
+}
+function deleteWorkstream(name){
+  if(!confirm(`Delete workstream "${name}"? Tasks using it will keep the label but lose the colour.`))return;
+  delete WS_CONFIG[name];
+  saveWorkstreams();syncAllWsDropdowns();renderDashboard();
+}
+function syncAllWsDropdowns(){
+  const wsList=Object.keys(WS_CONFIG);
+  // Task dropdowns (no extra option)
+  ['t-ws','edit-ws'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    el.innerHTML=wsList.map(w=>`<option value="${w}"${w===cur?' selected':''}>${WS_CONFIG[w].icon} ${w}</option>`).join('');
+  });
+  // Milestone dropdown (with General option)
+  const msEl=document.getElementById('ms-ws');
+  if(msEl){
+    const cur=msEl.value;
+    msEl.innerHTML=wsList.map(w=>`<option value="${w}"${w===cur?' selected':''}>${WS_CONFIG[w].icon} ${w}</option>`).join('')+'<option value="General">📋 General</option>';
+  }
+  // Comment dropdown (with General option)
+  const cEl=document.getElementById('c-ws');
+  if(cEl){
+    const cur=cEl.value;
+    cEl.innerHTML='<option value="">General</option>'+wsList.map(w=>`<option value="${w}"${w===cur?' selected':''}>${WS_CONFIG[w].icon} ${w}</option>`).join('');
+  }
+  // Filter dropdown
+  const fEl=document.getElementById('f-ws-sel');
+  if(fEl){
+    const cur=fEl.value;
+    fEl.innerHTML='<option value="all">All Streams</option>'+wsList.map(w=>`<option value="${w}"${w===cur?' selected':''}>${WS_CONFIG[w].icon} ${w}</option>`).join('');
+  }
+}
+const STATUS_CONFIG={
+  not_started:{label:'Not Started',color:'#888',bg:'#F5F5F5'},
+  in_progress:{label:'In Progress',color:'#1A5FA8',bg:'rgba(26,95,168,0.1)'},
+  done:{label:'Done',color:'#1A7A4A',bg:'rgba(26,122,74,0.1)'},
+  blocked:{label:'Blocked',color:'#C73B1E',bg:'rgba(199,59,30,0.1)'}
+};
+const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmt=d=>new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+let tasks=[],milestones=[],comments=[];
+let sbUrl='',sbKey='',sbToken='';
+let currentUser=null,isDemo=false,currentFilter='all',editingId=null;
+
+// ─── DEMO DATA ────────────────────────────────────────────────────────────
+const DEMO_TASKS=[
+  {id:'t1',name:'Foundation waterproofing — Basement level',workstream:'Civil',status:'done',pct:100,week_num:1,due_date:'2026-04-25',notes:'Completed ahead of schedule'},
+  {id:'t2',name:'HVAC main duct installation — Ground floor',workstream:'HVAC',status:'in_progress',pct:65,week_num:2,due_date:'2026-05-02',notes:''},
+  {id:'t3',name:'Electrical conduit laying — Exhibit hall A',workstream:'Electrical',status:'in_progress',pct:40,week_num:2,due_date:'2026-05-05',notes:'Waiting for conduit delivery'},
+  {id:'t4',name:'Display cabinet fabrication — Batch 1',workstream:'Fabrication',status:'blocked',pct:20,week_num:2,due_date:'2026-05-08',notes:'Material approval pending from client'},
+  {id:'t5',name:'Exhibit content — Philatelic history section',workstream:'Content',status:'in_progress',pct:55,week_num:2,due_date:'2026-05-10',notes:''},
+  {id:'t6',name:'Interactive kiosk software — v1',workstream:'Software',status:'in_progress',pct:30,week_num:3,due_date:'2026-05-15',notes:''},
+  {id:'t7',name:'Ceiling plastering — Level 1',workstream:'Civil',status:'in_progress',pct:75,week_num:2,due_date:'2026-05-03',notes:''},
+  {id:'t8',name:'LED lighting installation plan finalized',workstream:'Electrical',status:'done',pct:100,week_num:1,due_date:'2026-04-28',notes:''},
+];
+const DEMO_MS=[
+  {id:'m1',week_num:1,week_label:'Week 1',start_date:'2026-04-21',end_date:'2026-04-27',description:'Complete all basement waterproofing and foundation inspections',workstream:'Civil',done:true,blocked:false},
+  {id:'m2',week_num:1,week_label:'Week 1',start_date:'2026-04-21',end_date:'2026-04-27',description:'Finalize electrical layout drawings and get client approval',workstream:'Electrical',done:true,blocked:false},
+  {id:'m3',week_num:2,week_label:'Week 2',start_date:'2026-04-28',end_date:'2026-05-04',description:'HVAC main trunk lines installed on ground floor',workstream:'HVAC',done:false,blocked:false},
+  {id:'m4',week_num:2,week_label:'Week 2',start_date:'2026-04-28',end_date:'2026-05-04',description:'Display cabinet material approval from client',workstream:'Fabrication',done:false,blocked:true},
+  {id:'m5',week_num:3,week_label:'Week 3',start_date:'2026-05-05',end_date:'2026-05-11',description:'All exhibit content for Section A delivered and reviewed',workstream:'Content',done:false,blocked:false},
+];
+const DEMO_COMMENTS=[
+  {id:'c1',task_id:null,author_name:'Siddhant Batra',author_email:'siddhant@tagglabs.in',author_role:'pm',content:'Site visit completed today. Civil work on track, HVAC team has started but needs 2 more crew members for Level 2.',workstream:'HVAC',created_at:new Date(Date.now()-86400000*2).toISOString()},
+  {id:'c2',task_id:'t4',author_name:'Client - DoP',author_email:'client@dop.in',author_role:'client',content:'Please share the material samples for display cabinets before proceeding. We need to approve the finish and colour.',workstream:'Fabrication',created_at:new Date(Date.now()-86400000).toISOString()},
+  {id:'c3',task_id:null,author_name:'Siddhant Batra',author_email:'siddhant@tagglabs.in',author_role:'pm',content:'Material samples for cabinets have been ordered and will be presented in the next site meeting on May 3rd.',workstream:'Fabrication',created_at:new Date(Date.now()-3600000*3).toISOString()},
+];
+
+// ─── SUPABASE ─────────────────────────────────────────────────────────────
+function sbH(){return{'Content-Type':'application/json','apikey':sbKey,'Authorization':'Bearer '+(sbToken||sbKey),'Prefer':'return=representation'};}
+async function sbSel(t){const r=await fetch(`${sbUrl}/rest/v1/${t}?select=*&order=created_at`,{headers:sbH()});if(!r.ok)throw new Error(r.status+':'+await r.text());return r.json();}
+async function sbUps(t,row){const r=await fetch(`${sbUrl}/rest/v1/${t}`,{method:'POST',headers:{...sbH(),'Prefer':'resolution=merge-duplicates,return=representation'},body:JSON.stringify(row)});if(!r.ok)throw new Error(r.status+':'+await r.text());return r.json();}
+async function sbDel(t,id){const r=await fetch(`${sbUrl}/rest/v1/${t}?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:sbH()});if(!r.ok)throw new Error(r.status+':'+await r.text());}
+async function sbPatch(t,id,data){const r=await fetch(`${sbUrl}/rest/v1/${t}?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',headers:sbH(),body:JSON.stringify(data)});if(!r.ok)throw new Error(r.status+':'+await r.text());}
+async function sbSignIn(e,p){const r=await fetch(`${sbUrl}/auth/v1/token?grant_type=password`,{method:'POST',headers:sbH(),body:JSON.stringify({email:e,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.error_description||d.msg||'Sign in failed');return d;}
+async function sbSignUp(e,p){const r=await fetch(`${sbUrl}/auth/v1/signup`,{method:'POST',headers:sbH(),body:JSON.stringify({email:e,password:p})});const d=await r.json();if(!r.ok)throw new Error(d.msg||d.error||'Sign up failed');return d;}
+async function sbUser(tok){const r=await fetch(`${sbUrl}/auth/v1/user`,{headers:{...sbH(),'Authorization':'Bearer '+tok}});if(!r.ok)return null;return r.json();}
+async function sbPing(){const r=await fetch(`${sbUrl}/rest/v1/site_tasks?select=id&limit=1`,{headers:sbH()});if(!r.ok)throw new Error(r.status+':'+await r.text());}
+
+// ─── SETUP ────────────────────────────────────────────────────────────────
+async function connectSB(){
+  const url=document.getElementById('sb-url').value.trim().replace(/\/$/,'');
+  const key=document.getElementById('sb-key').value.trim();
+  const errEl=document.getElementById('setup-err'),btn=document.getElementById('btn-connect');
+  errEl.style.display='none';
+  if(!url||!key){showSetupErr('Please enter URL and key.');return;}
+  if(!url.startsWith('https://')){showSetupErr('URL must start with https://');return;}
+  btn.disabled=true;btn.textContent='Connecting…';
+  sbUrl=url;sbKey=key;
+  try{
+    await sbPing();
+    localStorage.setItem('spt_url',url);localStorage.setItem('spt_key',key);
+    document.getElementById('ov-setup').style.display='none';
+    document.getElementById('ov-login').style.display='flex';
+    setSyncStatus('live');document.getElementById('h-sub').textContent='Supabase · Live';
+    const st=localStorage.getItem('spt_token');
+    if(st){const u=await sbUser(st);if(u&&u.email){sbToken=st;loginSuccess(u);return;}}
+  }catch(e){showSetupErr('❌ '+e.message);btn.disabled=false;btn.textContent='Connect & Launch →';sbUrl='';sbKey='';}
+}
+function showSetupErr(m){const e=document.getElementById('setup-err');e.textContent=m;e.style.display='block';}
+function demoMode(){
+  isDemo=true;tasks=JSON.parse(JSON.stringify(DEMO_TASKS));milestones=JSON.parse(JSON.stringify(DEMO_MS));comments=JSON.parse(JSON.stringify(DEMO_COMMENTS));
+  document.getElementById('ov-setup').style.display='none';document.getElementById('ov-login').style.display='none';
+  document.getElementById('h-sub').textContent='Demo Mode';setSyncStatus('local');
+  renderAll();
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────
+let authTab='si';
+function setTab(t){authTab=t;document.getElementById('t-si').className='tab'+(t==='si'?' on':'');document.getElementById('t-su').className='tab'+(t==='su'?' on':'');document.getElementById('auth-btn').textContent=t==='si'?'Sign In':'Create Account';document.getElementById('auth-msg').style.display='none';}
+async function doAuth(){
+  const email=document.getElementById('a-email').value.trim(),pass=document.getElementById('a-pass').value;
+  const btn=document.getElementById('auth-btn');
+  if(!email||!pass){showAuthMsg('Enter email and password.','err');return;}
+  btn.disabled=true;btn.textContent='Please wait…';
+  try{
+    if(authTab==='su'){const d=await sbSignUp(email,pass);if(d.access_token){sbToken=d.access_token;localStorage.setItem('spt_token',sbToken);loginSuccess(d.user||{email});}else{showAuthMsg('✅ Check your email to confirm, then sign in.','ok');btn.disabled=false;btn.textContent='Create Account';}}
+    else{const d=await sbSignIn(email,pass);sbToken=d.access_token;localStorage.setItem('spt_token',sbToken);loginSuccess(d.user||{email});}
+  }catch(e){showAuthMsg('❌ '+e.message,'err');btn.disabled=false;btn.textContent=authTab==='si'?'Sign In':'Create Account';}
+}
+function showAuthMsg(m,t){const el=document.getElementById('auth-msg');el.textContent=m;el.className=t==='ok'?'msg-ok':'msg-err';el.style.display='block';}
+async function loginSuccess(user){
+  currentUser=user;
+  document.getElementById('ov-login').style.display='none';
+  document.getElementById('h-user').style.display='flex';document.getElementById('btn-so').style.display='block';
+  document.getElementById('h-av').textContent=(user.email||'?')[0].toUpperCase();
+  document.getElementById('h-email').textContent=user.email||'';
+  await loadFromSB();renderAll();
+}
+function signOut(){sbToken='';localStorage.removeItem('spt_token');currentUser=null;document.getElementById('h-user').style.display='none';document.getElementById('btn-so').style.display='none';document.getElementById('ov-login').style.display='flex';}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────
+async function loadFromSB(){
+  if(!sbUrl)return;
+  try{const[t,m,c]=await Promise.all([sbSel('site_tasks'),sbSel('weekly_milestones'),sbSel('site_comments')]);tasks=t||[];milestones=m||[];comments=c||[];setSyncStatus('live');}
+  catch(e){console.warn('Load failed',e);}
+}
+function setSyncStatus(s){const d=document.getElementById('sdot'),t=document.getElementById('stxt');if(s==='live'){d.className='sdot live';t.textContent='Live sync';}else if(s==='saving'){d.className='sdot saving';t.textContent='Saving…';}else{d.className='sdot';t.textContent='Local only';}}
+
+async function saveTask(task){setSyncStatus('saving');if(sbUrl){try{await sbUps('site_tasks',task);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function deleteTask(id){setSyncStatus('saving');if(sbUrl){try{await sbDel('site_tasks',id);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function saveMilestone(ms){setSyncStatus('saving');if(sbUrl){try{await sbUps('weekly_milestones',ms);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function deleteMilestone(id){setSyncStatus('saving');if(sbUrl){try{await sbDel('weekly_milestones',id);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function saveComment(c){setSyncStatus('saving');if(sbUrl){try{await sbUps('site_comments',c);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function patchMilestone(id,data){setSyncStatus('saving');if(sbUrl){try{await sbPatch('weekly_milestones',id,data);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+async function patchTask(id,data){setSyncStatus('saving');if(sbUrl){try{await sbPatch('site_tasks',id,data);}catch(e){console.warn(e);}}setSyncStatus(sbUrl?'live':'local');}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────────────
+function renderAll(){
+  try{syncAllWsDropdowns();}catch(e){console.error('syncAllWsDropdowns error:',e);}
+  try{renderDashboard();}catch(e){console.error('renderDashboard error:',e);}
+  try{renderTasks();}catch(e){console.error('renderTasks error:',e);}
+  try{renderWeekly();}catch(e){console.error('renderWeekly error:',e);}
+  try{renderGantt();}catch(e){console.error('renderGantt error:',e);}
+  try{renderComments();}catch(e){console.error('renderComments error:',e);}
+  try{updateBadges();}catch(e){console.error('updateBadges error:',e);}
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const total=tasks.length,done=tasks.filter(t=>t.status==='done').length;
+  const ip=tasks.filter(t=>t.status==='in_progress').length,blocked=tasks.filter(t=>t.status==='blocked').length;
+  const avgPct=tasks.length?Math.round(tasks.reduce((s,t)=>s+Number(t.pct),0)/tasks.length):0;
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('st-done-pct').textContent=total?Math.round(done/total*100)+'% done':'0% done';
+  document.getElementById('st-ip').textContent=ip;
+  document.getElementById('st-blocked').textContent=blocked;
+  document.getElementById('st-blocked-note').textContent=blocked>0?'⚠ needs attention':'all clear';
+  document.getElementById('st-ms').textContent=milestones.filter(m=>!m.done).length;
+  document.getElementById('st-ms-note').textContent='pending milestones';
+  document.getElementById('st-comments').textContent=comments.length;
+
+  // Ring
+  const circ=339.3,offset=circ-(circ*avgPct/100);
+  document.getElementById('ring-fill').style.strokeDashoffset=offset;
+  document.getElementById('ring-pct').textContent=avgPct+'%';
+
+  // Streams
+  const grid=document.getElementById('streams-grid');grid.innerHTML='';
+  Object.entries(WS_CONFIG).forEach(([ws,cfg])=>{
+    const wsTasks=tasks.filter(t=>t.workstream===ws);
+    const wsAvg=wsTasks.length?Math.round(wsTasks.reduce((s,t)=>s+Number(t.pct),0)/wsTasks.length):0;
+    const wsBlocked=wsTasks.filter(t=>t.status==='blocked').length;
+    const wsDone=wsTasks.filter(t=>t.status==='done').length;
+    const card=document.createElement('div');card.className='stream-card';
+    card.innerHTML=`<div class="sc-head"><div class="sc-ico" style="background:${cfg.bg}">${cfg.icon}</div><div class="sc-pct" style="color:${cfg.color}">${wsAvg}%</div></div>
+      <div class="sc-name">${ws==='Civil'?'Civil & Structure':ws==='Content'?'Content & Media':ws==='Software'?'Software & Tech':ws}</div>
+      <div class="sc-status">${wsTasks.length} tasks${wsBlocked>0?` · <span style="color:var(--red)">⚠ ${wsBlocked} blocked</span>`:''}</div>
+      <div class="sc-bar-bg"><div class="sc-bar-fill" style="width:${wsAvg}%;background:${cfg.color}"></div></div>
+      <div class="sc-meta"><span>${wsDone} done</span><span>${wsTasks.length-wsDone} remaining</span></div>`;
+    grid.appendChild(card);
+  });
+
+  // Recent tasks
+  const recent=document.getElementById('recent-tasks');recent.innerHTML='';
+  const sorted=[...tasks].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,5);
+  if(!sorted.length){recent.innerHTML='<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">No tasks yet</div></div>';return;}
+  sorted.forEach(t=>recent.appendChild(buildTaskEl(t)));
+
+  // AI insights
+  genInsights();
+}
+
+// ─── TASKS ────────────────────────────────────────────────────────────────
+function renderTasks(){
+  const list=document.getElementById('task-list');list.innerHTML='';
+  const statusFilter=document.getElementById('filter-status').value;
+  let filtered=tasks.filter(t=>currentFilter==='all'||t.workstream===currentFilter);
+  if(statusFilter)filtered=filtered.filter(t=>t.status===statusFilter);
+  filtered.sort((a,b)=>{const o={blocked:0,in_progress:1,not_started:2,done:3};return(o[a.status]||2)-(o[b.status]||2);});
+  if(!filtered.length){list.innerHTML='<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">No tasks match this filter</div></div>';return;}
+  filtered.forEach(t=>list.appendChild(buildTaskEl(t)));
+}
+
+function buildTaskEl(t){
+  const cfg=WS_CONFIG[t.workstream]||{color:'#888',bg:'#F5F5F5',icon:'📋'};
+  const sc=STATUS_CONFIG[t.status]||STATUS_CONFIG.not_started;
+  const el=document.createElement('div');el.className='task-item';
+  el.innerHTML=`
+    <div class="task-row1">
+      <span class="task-ws" style="background:${cfg.bg};color:${cfg.color}">${cfg.icon} ${t.workstream}</span>
+      <span class="task-name">${t.name}</span>
+      <span class="bdg" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.color}22;font-family:'DM Mono',monospace;font-size:10px;padding:2px 7px;border-radius:4px">${sc.label}</span>
+    </div>
+    <div class="task-row2">
+      <div class="pct-wrap">
+        <div class="pct-bar"><div class="pct-fill" style="width:${t.pct}%;background:${cfg.color}"></div></div>
+        <span class="pct-lbl">${t.pct}%</span>
+      </div>
+      ${t.due_date?`<span class="task-date">Due ${fmt(t.due_date)}</span>`:''}
+    </div>
+    ${t.notes?`<div style="font-size:12px;color:var(--ink4);margin-top:6px;padding:6px 10px;background:var(--cream);border-radius:4px;border-left:2px solid ${cfg.color}">${t.notes}</div>`:''}
+    <div class="task-actions">
+      <button class="task-btn" onclick="openEditModal('${t.id}')">✏️ Edit</button>
+      <button class="task-btn" onclick="quickStatus('${t.id}','done')">✅ Mark Done</button>
+      <button class="task-btn" onclick="quickStatus('${t.id}','blocked')">🚫 Mark Blocked</button>
+      <button class="task-btn del" onclick="deleteTaskUI('${t.id}')">✕ Delete</button>
+    </div>`;
+  return el;
+}
+
+function renderFilterBar(){
+  const sel=document.getElementById('f-ws-sel');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="all">All Streams</option>'+Object.keys(WS_CONFIG).map(w=>`<option value="${w}"${w===cur?' selected':''}>${WS_CONFIG[w].icon} ${w}</option>`).join('');
+}
+
+function filterTasks(ws){
+  currentFilter=ws||'all';
+  renderTasks();
+}
+
+async function addTask(){
+  const name=document.getElementById('t-name').value.trim();
+  if(!name){alert('Please enter a task name.');return;}
+  const task={id:genId(),name,workstream:document.getElementById('t-ws').value,status:document.getElementById('t-status').value,pct:parseInt(document.getElementById('t-pct').value)||0,week_num:1,due_date:document.getElementById('t-due').value,notes:document.getElementById('t-notes').value,created_at:new Date().toISOString()};
+  tasks.unshift(task);
+  document.getElementById('t-name').value='';document.getElementById('t-pct').value='';document.getElementById('t-due').value='';document.getElementById('t-notes').value='';
+  renderAll();await saveTask(task);
+}
+
+async function quickStatus(id,status){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  t.status=status;if(status==='done')t.pct=100;
+  renderAll();await patchTask(id,{status,pct:t.pct});
+}
+
+async function deleteTaskUI(id){
+  if(!confirm('Delete this task?'))return;
+  tasks=tasks.filter(t=>t.id!==id);renderAll();await deleteTask(id);
+}
+
+// ─── EDIT MODAL ───────────────────────────────────────────────────────────
+function openEditModal(id){
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  editingId=id;
+  document.getElementById('edit-name').value=t.name;
+  document.getElementById('edit-status').value=t.status;
+  document.getElementById('edit-pct').value=t.pct;
+  document.getElementById('edit-ws').value=t.workstream;
+  document.getElementById('edit-due').value=t.due_date||'';
+  document.getElementById('edit-notes').value=t.notes||'';
+  document.getElementById('edit-modal').className='modal-overlay open';
+}
+function closeModal(){document.getElementById('edit-modal').className='modal-overlay';editingId=null;}
+async function saveEdit(){
+  const t=tasks.find(x=>x.id===editingId);if(!t)return;
+  t.name=document.getElementById('edit-name').value.trim();
+  t.status=document.getElementById('edit-status').value;
+  t.pct=parseInt(document.getElementById('edit-pct').value)||0;
+  t.workstream=document.getElementById('edit-ws').value;
+  t.due_date=document.getElementById('edit-due').value;
+  t.notes=document.getElementById('edit-notes').value;
+  closeModal();renderAll();await saveTask(t);
+}
+
+// ─── WEEKLY MILESTONES ────────────────────────────────────────────────────
+function renderWeekly(){
+  const list=document.getElementById('weekly-list');list.innerHTML='';
+  if(!milestones.length){list.innerHTML='<div class="empty"><div class="empty-ico">🎯</div><div class="empty-txt">No milestones yet</div><div class="empty-sub">Click "+ Add Milestone" to get started</div></div>';return;}
+  const byWeek={};
+  milestones.forEach(m=>{if(!byWeek[m.week_num])byWeek[m.week_num]=[];byWeek[m.week_num].push(m);});
+  Object.entries(byWeek).sort((a,b)=>a[0]-b[0]).forEach(([wn,items])=>{
+    const total=items.length,done=items.filter(m=>m.done).length,pct=total?Math.round(done/total*100):0;
+    const sample=items[0];
+    const card=document.createElement('div');card.className='week-card';
+    const dateRange=sample.start_date&&sample.end_date?`${fmt(sample.start_date)} – ${fmt(sample.end_date)}`:'';
+    card.innerHTML=`<div class="week-head" onclick="toggleWeek(this)">
+      <span class="week-num">WEEK ${wn}</span>
+      <div style="flex:1"><div class="week-title">Week ${wn} Targets</div>${dateRange?`<div style="font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace;margin-top:2px">${dateRange}</div>`:''}</div>
+      <div style="text-align:right"><div class="week-pct" style="color:${pct===100?'var(--green)':pct>50?'var(--amber)':'var(--red)'}">${pct}%</div><div style="font-size:10px;color:var(--ink4);font-family:'DM Mono',monospace">${done}/${total} done</div></div>
+      <span style="margin-left:10px;color:var(--ink4);font-size:12px;transform:rotate(0deg);transition:transform 0.2s" class="wk-arrow">▼</span>
+    </div>
+    <div class="week-body ${wn<=2?'open':''}">
+      <div class="week-progress-bar" style="height:3px;background:var(--cream3);border-radius:2px;margin-bottom:14px">
+        <div style="height:100%;border-radius:2px;background:${pct===100?'var(--green)':pct>50?'var(--amber)':'var(--red)'};width:${pct}%;transition:width 0.5s ease"></div>
+      </div>
+      ${items.map(m=>{
+        const cfg=WS_CONFIG[m.workstream]||{color:'#888',bg:'#F5F5F5'};
+        return `<div class="milestone-item">
+          <div class="ms-check ${m.done?'done':m.blocked?'blocked':''}" onclick="toggleMilestone('${m.id}')" title="${m.done?'Done':m.blocked?'Blocked':'Click to mark done'}">${m.done?'✓':m.blocked?'✕':''}</div>
+          <div class="ms-text ${m.done?'done-text':''}">${m.description}</div>
+          ${m.workstream?`<span class="ms-ws" style="background:${cfg.bg};color:${cfg.color}">${m.workstream}</span>`:''}
+          <button class="ms-del" onclick="deleteMilestoneUI('${m.id}')">✕</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+    list.appendChild(card);
+  });
+}
+
+function toggleWeek(el){
+  const body=el.nextElementSibling,arrow=el.querySelector('.wk-arrow');
+  body.classList.toggle('open');el.classList.toggle('open');
+  arrow.style.transform=body.classList.contains('open')?'rotate(180deg)':'rotate(0deg)';
+}
+
+async function toggleMilestone(id){
+  const m=milestones.find(x=>x.id===id);if(!m)return;
+  if(m.blocked){m.blocked=false;m.done=false;}
+  else if(m.done){m.done=false;}
+  else{m.done=true;}
+  renderWeekly();renderDashboard();
+  await patchMilestone(id,{done:m.done,blocked:m.blocked});
+}
+
+async function deleteMilestoneUI(id){
+  if(!confirm('Delete this milestone?'))return;
+  milestones=milestones.filter(m=>m.id!==id);renderWeekly();renderDashboard();
+  await deleteMilestone(id);
+}
+
+function toggleMsForm(){
+  const form=document.getElementById('ms-add-form');
+  const isHidden=form.style.display==='none';
+  form.style.display=isHidden?'block':'none';
+  if(isHidden){
+    syncAllWsDropdowns();
+    document.getElementById('ms-desc').focus();
+  }
+}
+function closeMsModal(){document.getElementById('ms-add-form').style.display='none';}
+async function addMilestone(){
+  const desc=document.getElementById('ms-desc').value.trim();
+  const weekNum=parseInt(document.getElementById('ms-week').value)||1;
+  const ws=document.getElementById('ms-ws').value;
+  const startDate=document.getElementById('ms-start').value;
+  const endDate=document.getElementById('ms-end').value;
+  if(!desc){alert('Please enter a milestone description.');return;}
+  if(!ws){alert('Please select a workstream.');return;}
+  const ms={
+    id:genId(),
+    week_num:weekNum,
+    week_label:'Week '+weekNum,
+    start_date:startDate,
+    end_date:endDate,
+    description:desc,
+    workstream:ws,
+    done:false,
+    blocked:false,
+    created_at:new Date().toISOString()
+  };
+  milestones.push(ms);
+  document.getElementById('ms-desc').value='';
+  document.getElementById('ms-add-form').style.display='none';
+  renderWeekly();renderDashboard();
+  await saveMilestone(ms);
+}
+
+// ─── GANTT ────────────────────────────────────────────────────────────────
+function renderGantt(){
+  const wrap=document.getElementById('gantt-wrap');wrap.innerHTML='';
+  const withDates=tasks.filter(t=>t.due_date);
+  if(!withDates.length){wrap.innerHTML='<div class="empty" style="padding:60px"><div class="empty-ico">📅</div><div class="empty-txt">No tasks with due dates</div><div class="empty-sub">Add due dates to tasks to see the Gantt chart</div></div>';return;}
+  const dates=withDates.map(t=>new Date(t.due_date));
+  const minDate=new Date(Math.min(...dates));const maxDate=new Date(Math.max(...dates));
+  minDate.setDate(minDate.getDate()-7);maxDate.setDate(maxDate.getDate()+7);
+  const totalDays=(maxDate-minDate)/(1000*60*60*24);
+  const labelW=200,wsW=100;
+  // Build weeks
+  const weeks=[];let d=new Date(minDate);
+  while(d<=maxDate){const w=new Date(d);weeks.push(w);d.setDate(d.getDate()+7);}
+  const totalW=Math.max(weeks.length*80,400);
+  const tableW=labelW+wsW+totalW;
+  let html=`<div style="overflow-x:auto"><table style="width:${tableW}px;border-collapse:collapse;min-width:100%">
+    <thead><tr style="background:var(--cream2)">
+      <th style="width:${labelW}px;padding:10px 14px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink4);border-bottom:1px solid var(--b);border-right:1px solid var(--b)">Task</th>
+      <th style="width:${wsW}px;padding:10px 8px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--ink4);border-bottom:1px solid var(--b);border-right:1px solid var(--b)">Stream</th>
+      ${weeks.map(w=>`<th style="width:80px;padding:8px 4px;text-align:center;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--ink4);border-bottom:1px solid var(--b);border-right:1px solid var(--b);font-family:'DM Mono',monospace">${w.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</th>`).join('')}
+    </tr></thead><tbody>`;
+  withDates.sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).forEach(t=>{
+    const cfg=WS_CONFIG[t.workstream]||{color:'#888',bg:'#F5F5F5'};
+    const dueDate=new Date(t.due_date);
+    const startDay=Math.round((dueDate-minDate)/(1000*60*60*24))-7;
+    const startWeekIdx=Math.max(0,Math.floor(startDay/7));
+    const dueWeekIdx=Math.min(weeks.length-1,Math.round((dueDate-minDate)/(1000*60*60*24)/7));
+    html+=`<tr style="border-bottom:1px solid var(--b)">
+      <td style="padding:10px 14px;font-size:12px;font-weight:500;color:var(--ink);border-right:1px solid var(--b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:${labelW}px">${t.name}</td>
+      <td style="padding:10px 8px;border-right:1px solid var(--b)"><span style="font-size:10px;font-family:'DM Mono',monospace;font-weight:600;padding:2px 6px;border-radius:3px;background:${cfg.bg};color:${cfg.color};white-space:nowrap">${t.workstream}</span></td>
+      ${weeks.map((w,wi)=>{
+        const isActive=wi===dueWeekIdx;const isBefore=wi<dueWeekIdx;
+        if(isActive)return`<td style="padding:6px 4px;border-right:1px solid var(--b);background:${cfg.bg}"><div style="height:20px;border-radius:4px;background:${cfg.color};display:flex;align-items:center;padding:0 6px"><span style="font-size:10px;font-weight:600;color:#fff;font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden">${t.pct}%</span></div></td>`;
+        if(isBefore)return`<td style="padding:6px 4px;border-right:1px solid var(--b);background:var(--cream)"><div style="height:20px;border-radius:4px;background:${cfg.color}22;border:1px dashed ${cfg.color}44"></div></td>`;
+        return`<td style="padding:6px 4px;border-right:1px solid var(--b)"></td>`;
+      }).join('')}
+    </tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  wrap.innerHTML=html;
+}
+
+// ─── COMMENTS ─────────────────────────────────────────────────────────────
+function renderComments(){
+  const list=document.getElementById('comments-list');list.innerHTML='';
+  if(!comments.length){list.innerHTML='<div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">No comments yet</div></div>';renderCommentStats();return;}
+  const sorted=[...comments].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  sorted.forEach(c=>{
+    const roleColors={team:'#1A5FA8',client:'#C73B1E',pm:'#1A7A4A',contractor:'#6B35B8'};
+    const col=roleColors[c.author_role]||'#888';
+    const cfg=c.workstream?WS_CONFIG[c.workstream]:null;
+    const el=document.createElement('div');el.className='comment-item';
+    el.innerHTML=`<div class="c-av" style="background:${col}">${(c.author_name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="c-meta">
+          <span class="c-name">${c.author_name||'Anonymous'}</span>
+          <span class="c-role" style="background:${col}15;color:${col};border:1px solid ${col}22">${c.author_role}</span>
+          ${cfg?`<span class="c-tag" style="background:${cfg.bg};color:${cfg.color}">${c.workstream}</span>`:''}
+          <span class="c-time">${timeAgo(c.created_at)}</span>
+        </div>
+        <div class="c-text">${c.content}</div>
+      </div>`;
+    list.appendChild(el);
+  });
+  renderCommentStats();
+}
+
+function timeAgo(iso){
+  const d=new Date(iso),now=new Date(),diff=now-d;
+  if(diff<60000)return'Just now';if(diff<3600000)return Math.round(diff/60000)+'m ago';
+  if(diff<86400000)return Math.round(diff/3600000)+'h ago';
+  return Math.round(diff/86400000)+'d ago';
+}
+
+function renderCommentStats(){
+  const el=document.getElementById('comment-stats');
+  const byRole={};comments.forEach(c=>{byRole[c.author_role]=(byRole[c.author_role]||0)+1;});
+  const clientComments=comments.filter(c=>c.author_role==='client');
+  el.innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--ink3)">Total</span><span style="font-weight:600;font-family:'DM Mono',monospace">${comments.length}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--red)">Client</span><span style="font-weight:600;font-family:'DM Mono',monospace;color:var(--red)">${clientComments.length}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--ink3)">Team</span><span style="font-weight:600;font-family:'DM Mono',monospace">${byRole.team||0}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--ink3)">PM</span><span style="font-weight:600;font-family:'DM Mono',monospace">${byRole.pm||0}</span></div>
+    ${clientComments.length>0?`<div style="margin-top:8px;padding:8px;background:var(--rg);border-radius:6px;font-size:11px;color:var(--red)">⚠ ${clientComments.length} client comment${clientComments.length>1?'s':''} need${clientComments.length>1?'':'s'} response</div>`:''}
+  </div>`;
+}
+
+async function addComment(){
+  const text=document.getElementById('c-text').value.trim();
+  const name=document.getElementById('c-name').value.trim()||currentUser?.email||'Anonymous';
+  if(!text){alert('Enter a comment.');return;}
+  const c={id:genId(),task_id:null,author_name:name,author_email:currentUser?.email||'',author_role:document.getElementById('c-role').value,content:text,workstream:document.getElementById('c-ws').value,created_at:new Date().toISOString()};
+  comments.unshift(c);document.getElementById('c-text').value='';
+  renderComments();updateBadges();await saveComment(c);
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────
+let currentTab='dashboard';
+function showTab(tab){
+  currentTab=tab;
+  ['dashboard','daily','weekly','gantt','comments'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('.nav-tab[data-tab]').forEach(el=>{
+    el.className='nav-tab'+(el.dataset.tab===tab?' on':'');
+  });
+  try{
+    if(tab==='gantt') renderGantt();
+    if(tab==='comments') renderComments();
+    if(tab==='weekly'){ renderWeekly(); syncAllWsDropdowns(); }
+  }catch(e){ console.warn('Tab render error:',e); }
+}
+
+function updateBadges(){
+  const blocked=tasks.filter(t=>t.status==='blocked').length;
+  document.getElementById('badge-daily').textContent=blocked>0?blocked:'';
+  document.getElementById('badge-daily').style.display=blocked>0?'inline':'none';
+  const clientC=comments.filter(c=>c.author_role==='client').length;
+  document.getElementById('badge-comments').textContent=clientC>0?clientC:'';
+  document.getElementById('badge-comments').style.display=clientC>0?'inline':'none';
+}
+
+// ─── AI INSIGHTS ──────────────────────────────────────────────────────────
+function genInsights(){
+  const area=document.getElementById('ai-insights');area.innerHTML='';
+  if(!tasks.length){area.innerHTML='<div class="ai-ins i-info"><span class="aii">💡</span><span>Add tasks to see AI insights.</span></div>';return;}
+  const ins=[];
+  const blocked=tasks.filter(t=>t.status==='blocked');
+  if(blocked.length)ins.push({t:'i-danger',i:'🚨',m:`<strong>${blocked.length} task${blocked.length>1?'s are':' is'} blocked</strong>: ${blocked.map(t=>t.name).slice(0,2).join(', ')}${blocked.length>2?'…':''}`});
+  const overdue=tasks.filter(t=>t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='done');
+  if(overdue.length)ins.push({t:'i-warn',i:'⚠️',m:`<strong>${overdue.length} overdue task${overdue.length>1?'s':''}.</strong> ${overdue[0].name} was due ${fmt(overdue[0].due_date)}.`});
+  const avgPct=tasks.length?Math.round(tasks.reduce((s,t)=>s+Number(t.pct),0)/tasks.length):0;
+  if(avgPct>70)ins.push({t:'i-ok',i:'✅',m:`Overall project progress at <strong>${avgPct}%</strong> — excellent momentum.`});
+  else if(avgPct>40)ins.push({t:'i-info',i:'📊',m:`Site progress at <strong>${avgPct}%</strong>. Keep pushing to meet milestones.`});
+  else ins.push({t:'i-warn',i:'📊',m:`Overall progress at <strong>${avgPct}%</strong>. Acceleration needed.`});
+  const clientC=comments.filter(c=>c.author_role==='client').length;
+  if(clientC>0)ins.push({t:'i-warn',i:'💬',m:`<strong>${clientC} client comment${clientC>1?'s':''}</strong> waiting for response in Comments tab.`});
+  const thisWeek=milestones.filter(m=>!m.done&&!m.blocked);
+  if(thisWeek.length)ins.push({t:'i-info',i:'🎯',m:`<strong>${thisWeek.length} milestone${thisWeek.length>1?'s':''}</strong> pending. ${thisWeek[0].description.slice(0,60)}…`});
+  if(!ins.length)ins.push({t:'i-ok',i:'✅',m:'All systems on track. No blockers detected.'});
+  ins.forEach(x=>{const d=document.createElement('div');d.className=`ai-ins ${x.t}`;d.innerHTML=`<span class="aii">${x.i}</span><span>${x.m}</span>`;area.appendChild(d);});
+}
+
+// ─── AI CHAT ──────────────────────────────────────────────────────────────
+function ctxStr(){
+  const avgPct=tasks.length?Math.round(tasks.reduce((s,t)=>s+Number(t.pct),0)/tasks.length):0;
+  const blocked=tasks.filter(t=>t.status==='blocked').map(t=>`${t.name} (${t.workstream})`).join(', ')||'None';
+  const overdue=tasks.filter(t=>t.due_date&&new Date(t.due_date)<new Date()&&t.status!=='done').map(t=>t.name).join(', ')||'None';
+  const streamSummary=Object.keys(WS_CONFIG).map(ws=>{const wt=tasks.filter(t=>t.workstream===ws);const avg=wt.length?Math.round(wt.reduce((s,t)=>s+Number(t.pct),0)/wt.length):0;return`${ws}: ${avg}% (${wt.length} tasks, ${wt.filter(t=>t.status==='blocked').length} blocked)`;}).join('\n');
+  return `You are the project progress AI for the National Postal Museum construction project in India.\n\nOverall Progress: ${avgPct}%\nTotal Tasks: ${tasks.length}\nBlocked: ${blocked}\nOverdue: ${overdue}\nMilestones Pending: ${milestones.filter(m=>!m.done).length}\nClient Comments Unread: ${comments.filter(c=>c.author_role==='client').length}\n\nBy Workstream:\n${streamSummary}\n\nBe concise, professional, and actionable. Under 120 words. If asked for a client update, write it in formal language suitable to share directly with the client.`;
+}
+function addBubble(txt,role,ld){
+  const msgs=document.getElementById('chat-msgs');
+  const w=document.createElement('div');w.style.display='flex';
+  const b=document.createElement('div');b.className=`bbl b${role}${ld?' ld':''}`;b.innerHTML=txt;
+  w.appendChild(b);msgs.appendChild(w);msgs.scrollTop=9999;return b;
+}
+async function sendMsg(){
+  const inp=document.getElementById('cin'),btn=document.getElementById('snd-btn');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';btn.disabled=true;addBubble(txt,'u');
+  const el=addBubble('Analysing site data…','a',true);
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:ctxStr(),messages:[{role:'user',content:txt}]})});
+    const d=await r.json();
+    el.className='bbl ba';el.textContent=d.content?.[0]?.text||'Could not analyse.';
+  }catch{el.className='bbl ba';el.textContent='Connection error.';}
+  btn.disabled=false;
+}
+function ask(q){document.getElementById('cin').value=q;sendMsg();}
+
+// ─── SHARE ────────────────────────────────────────────────────────────────
+function shareReport(){
+  const banner=document.getElementById('share-banner');
+  banner.style.display='flex';
+  document.getElementById('share-link-txt').textContent=window.location.href;
+}
+function copyShareLink(){
+  navigator.clipboard.writeText(window.location.href).then(()=>{document.getElementById('share-link-txt').textContent='✅ Copied!';setTimeout(()=>document.getElementById('share-link-txt').textContent=window.location.href,2000);});
+}
+
+// ─── WORKSTREAM MODAL ────────────────────────────────────────────────────
+function openWsModal(){
+  renderWsList();
+  document.getElementById('ws-modal').className='modal-overlay open';
+}
+function closeWsModal(){document.getElementById('ws-modal').className='modal-overlay';}
+function renderWsList(){
+  const list=document.getElementById('ws-list');list.innerHTML='';
+  Object.entries(WS_CONFIG).forEach(([name,cfg])=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--cream);border-radius:8px;border:1px solid var(--b)';
+    d.innerHTML=`<span style="font-size:18px">${cfg.icon}</span>
+      <span style="flex:1;font-size:13px;font-weight:500;color:var(--ink)">${name}</span>
+      <span style="width:12px;height:12px;border-radius:50%;background:${cfg.color};flex-shrink:0"></span>
+      <button onclick="deleteWorkstream('${name}')" style="background:none;border:none;cursor:pointer;color:var(--ink4);font-size:12px;padding:3px 7px;border-radius:4px;transition:all 0.12s;font-family:'Bricolage Grotesque',sans-serif" onmouseover="this.style.background='rgba(199,59,30,0.1)';this.style.color='#C73B1E'" onmouseout="this.style.background='none';this.style.color='var(--ink4)'">✕ Delete</button>`;
+    list.appendChild(d);
+  });
+}
+function addWsFromModal(){
+  const name=document.getElementById('ws-new-name').value.trim();
+  const icon=document.getElementById('ws-new-icon').value;
+  if(!name){alert('Enter a workstream name.');return;}
+  if(WS_CONFIG[name]){alert('Workstream already exists.');return;}
+  addWorkstream(name,icon);
+  document.getElementById('ws-new-name').value='';
+  renderWsList();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+document.getElementById('today-date-label').textContent='Today · '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+loadWorkstreams();
+syncAllWsDropdowns();
+
+(function init(){
+  const su=localStorage.getItem('spt_url'),sk=localStorage.getItem('spt_key'),st=localStorage.getItem('spt_token');
+  if(su&&sk){
+    sbUrl=su;sbKey=sk;
+    document.getElementById('sb-url').value=su;document.getElementById('sb-key').value=sk;
+    document.getElementById('h-sub').textContent='Supabase · Live';setSyncStatus('live');
+    if(st){sbToken=st;sbUser(st).then(u=>{if(u&&u.email){document.getElementById('ov-setup').style.display='none';loginSuccess(u);}else{document.getElementById('ov-setup').style.display='none';document.getElementById('ov-login').style.display='flex';}});}
+    else{document.getElementById('ov-setup').style.display='none';document.getElementById('ov-login').style.display='flex';}
+  }
+})();
+</script>
+</body>
+</html>
